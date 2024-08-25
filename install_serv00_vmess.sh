@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 定义颜色
+# Defining Colors
 re="\033[0m"
 red="\033[1;91m"
 green="\e[1;32m"
@@ -26,39 +26,39 @@ export ARGO_AUTH=${ARGO_AUTH:-''}
 
 read_vmess_port() {
     while true; do
-        reading "请输入vmess端口 (面板开放的tcp端口): " vmess_port
+        reading "Please enter the vmess port (the tcp port opened by the panel): " vmess_port
         if [[ "$vmess_port" =~ ^[0-9]+$ ]] && [ "$vmess_port" -ge 1 ] && [ "$vmess_port" -le 65535 ]; then
-            green "你的vmess端口为: $vmess_port"
+            green "Your vmess port is: $vmess_port"
             break
         else
-            yellow "输入错误，请重新输入面板开放的TCP端口"
+            yellow "Input error, please re-enter the TCP port opened by the panel"
         fi
     done
 }
 
 read_nz_variables() {
   if [ -n "$NEZHA_SERVER" ] && [ -n "$NEZHA_PORT" ] && [ -n "$NEZHA_KEY" ]; then
-      green "使用自定义变量哪吒运行哪吒探针"
+      green "Run Nezha probe with custom variable Nezha"
       return
   else
-      reading "是否需要安装哪吒探针？【y/n】: " nz_choice
+      reading "Do I need to install a Nezha probe?？【y/n】: " nz_choice
       [[ -z $nz_choice ]] && return
       [[ "$nz_choice" != "y" && "$nz_choice" != "Y" ]] && return
-      reading "请输入哪吒探针域名或ip：" NEZHA_SERVER
-      green "你的哪吒域名为: $NEZHA_SERVER"
-      reading "请输入哪吒探针端口（回车跳过默认使用5555）：" NEZHA_PORT
+      reading "Please enter the Nezha probe domain name orip：" NEZHA_SERVER
+      green "Your Nezha domain name is: $NEZHA_SERVER"
+      reading "Please enter the Nezha probe port (press Enter to skip the default use 5555）：" NEZHA_PORT
       [[ -z $NEZHA_PORT ]] && NEZHA_PORT="5555"
-      green "你的哪吒端口为: $NEZHA_PORT"
-      reading "请输入哪吒探针密钥：" NEZHA_KEY
-      green "你的哪吒密钥为: $NEZHA_KEY"
+      green "Your Nezha port is: $NEZHA_PORT"
+      reading "Please enter the Nezha probe key：" NEZHA_KEY
+      green "Your Nezha key is: $NEZHA_KEY"
   fi
 }
 
 install_singbox() {
-echo -e "${yellow}本脚本安装vmess协议${purple}(vmess-ws)${re}"
-echo -e "${yellow}开始运行前，请确保在面板${purple}已开放1个tcp端口${re}"
-echo -e "${yellow}面板${purple}Additional services中的Run your own applications${yellow}已开启为${purplw}Enabled${yellow}状态${re}"
-reading "\n确定继续安装吗？【y/n】: " choice
+echo -e "${yellow}This script installs the vmess protocol${purple}(vmess-ws)${re}"
+echo -e "${yellow}Before starting the run, make sure that${purple}1 tcp port is open${re}"
+echo -e "${yellow}panel${purple}Additional services Neutral Run your own applications${yellow}Enabled for${purplw}Enabled${yellow}state${re}"
+reading "\nAre you sure you want to continue the installation？【y/n】: " choice
   case "$choice" in
     [Yy])
         cd $WORKDIR
@@ -71,12 +71,12 @@ reading "\n确定继续安装吗？【y/n】: " choice
         get_links
       ;;
     [Nn]) exit 0 ;;
-    *) red "无效的选择，请输入y或n" && menu ;;
+    *) red "Invalid selection, please enter y or n" && menu ;;
   esac
 }
 
 uninstall_singbox() {
-  reading "\n确定要卸载吗？【y/n】: " choice
+  reading "\nAre you sure you want to uninstall?【y/n】: " choice
     case "$choice" in
        [Yy])
           kill -9 $(ps aux | grep '[w]eb' | awk '{print $2}')
@@ -85,12 +85,12 @@ uninstall_singbox() {
           rm -rf $WORKDIR
           ;;
         [Nn]) exit 0 ;;
-    	*) red "无效的选择，请输入y或n" && menu ;;
+    	*) red "Invalid selection, please enter y or n" && menu ;;
     esac
 }
 
 kill_all_tasks() {
-reading "\n清理所有进程将退出ssh连接，确定继续清理吗？【y/n】: " choice
+reading "\nCleaning up all processes will exit the ssh connection. Are you sure you want to continue cleaning up?【y/n】: " choice
   case "$choice" in
     [Yy]) killall -9 -u $(whoami) ;;
        *) menu ;;
@@ -99,25 +99,25 @@ reading "\n清理所有进程将退出ssh连接，确定继续清理吗？【y/n
 
 argo_configure() {
   if [[ -z $ARGO_AUTH || -z $ARGO_DOMAIN ]]; then
-      reading "是否需要使用固定argo隧道？【y/n】: " argo_choice
+      reading "Is it necessary to use a fixed argo tunnel?【y/n】: " argo_choice
       [[ -z $argo_choice ]] && return
-      [[ "$argo_choice" != "y" && "$argo_choice" != "Y" && "$argo_choice" != "n" && "$argo_choice" != "N" ]] && { red "无效的选择，请输入y或n"; return; }
+      [[ "$argo_choice" != "y" && "$argo_choice" != "Y" && "$argo_choice" != "n" && "$argo_choice" != "N" ]] && { red "Invalid selection, please enter y or n"; return; }
       if [[ "$argo_choice" == "y" || "$argo_choice" == "Y" ]]; then
           # 读取 ARGO_DOMAIN 变量
           while [[ -z $ARGO_DOMAIN ]]; do
-            reading "请输入argo固定隧道域名: " ARGO_DOMAIN
+            reading "Please enter the argo fixed tunnel domain name: " ARGO_DOMAIN
             if [[ -z $ARGO_DOMAIN ]]; then
-                red "ARGO固定隧道域名不能为空，请重新输入。"
+                red "The ARGO fixed tunnel domain name cannot be empty, please re-enter it."
             else
-                green "你的argo固定隧道域名为: $ARGO_DOMAIN"
+                green "Your argo fixed tunnel domain name is: $ARGO_DOMAIN"
             fi
           done
         
           # 读取 ARGO_AUTH 变量
           while [[ -z $ARGO_AUTH ]]; do
-            reading "请输入argo固定隧道密钥（Json或Token）: " ARGO_AUTH
+            reading "Please enter the argo fixed tunnel key（Json或Token）: " ARGO_AUTH
             if [[ -z $ARGO_AUTH ]]; then
-                red "ARGO固定隧道密钥不能为空，请重新输入。"
+                red "The ARGO fixed tunnel key cannot be empty, please re-enter it."
             else
                 green "你的argo固定隧道密钥为: $ARGO_AUTH"
             fi
